@@ -2,13 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
-
+body{
+  background-color: #312e81;
+}
 .contained-btn {
-    background-color: #302550;
+    background-color: #312e81;
     color: white;
-    padding: 5px 20px;
+    padding: 5px 20px ;
     height: 40px;
     text-transform: uppercase;
+  }
+  .pbtn{
+    background-color: #d9f99d;
+    color: black;
+    font-weight: bolder;
   }
 
   
