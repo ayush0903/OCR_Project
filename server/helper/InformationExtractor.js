@@ -1,185 +1,138 @@
-/* All the processing is applied on the basis of pattern found in various valid Thai IDs */
 
-//first name
-const findFirstName = (words,lowerWords) => {
-    let i = 0 , len = words.length;
-    while(i<len && lowerWords[i]!=='name'){
-        i++;
-    }
-    if(i==len)
-    return null;
+// const data = {
+//     amazon: {
+//       status: "success",
+//       extracted_data: [
+//         {
+//           last_name: { value: "WORASIRI", confidence: 0.98 },
+//           given_names: [],
+//           birth_place: { value: null, confidence: null },
+//           birth_date: { value: "1991-09-21", confidence: 0.69 },
+//           issuance_date: { value: null, confidence: 0.08 },
+//           expire_date: { value: null, confidence: 0.33 },
+//           document_id: { value: null, confidence: 0.41 },
+//           issuing_state: { value: null, confidence: null },
+//           address: { value: null, confidence: 0.59 },
+//           age: { value: null, confidence: null },
+//           country: { name: null, alpha2: null, alpha3: null, confidence: null },
+//           document_type: { value: "DRIVER LICENSE FRONT", confidence: 0.96 },
+//           gender: { value: null, confidence: null },
+//           image_id: [],
+//           image_signature: [],
+//           mrz: { value: null, confidence: 0.98 },
+//           nationality: { value: null, confidence: null },
+//         },
+//       ],
+//       cost: 0.025,
+//     },
+//     affinda: {
+//       status: "success",
+//       extracted_data: [
+//         {
+//           last_name: { value: "MISS", confidence: 0.492 },
+//           given_names: [{ value: "Worasiri", confidence: 0.935 }],
+//           birth_place: { value: "Sum Lable", confidence: 0.067 },
+//           birth_date: { value: "1991-09-21", confidence: 0.961 },
+//           issuance_date: { value: null, confidence: null },
+//           expire_date: { value: "2030-09-20", confidence: 0.961 },
+//           document_id: { value: null, confidence: null },
+//           issuing_state: { value: null, confidence: null },
+//           address: { value: null, confidence: null },
+//           age: { value: null, confidence: null },
+//           country: null,
+//           document_type: { value: null, confidence: null },
+//           gender: { value: null, confidence: null },
+//           image_id: [],
+//           image_signature: [],
+//           mrz: { value: null, confidence: null },
+//           nationality: { value: null, confidence: null },
+//         },
+//       ],
+//       cost: 0.07,
+//     },
+//     microsoft: {
+//       status: "success",
+//       extracted_data: [
+//         {
+//           last_name: { value: "WORASIRI", confidence: null },
+//           given_names: [
+//             { value: "Miss", confidence: null },
+//             { value: "Palalee", confidence: null },
+//           ],
+//           birth_place: { value: null, confidence: null },
+//           birth_date: { value: null, confidence: null },
+//           issuance_date: { value: null, confidence: null },
+//           expire_date: { value: null, confidence: null },
+//           document_id: { value: null, confidence: null },
+//           issuing_state: { value: null, confidence: null },
+//           address: { value: null, confidence: null },
+//           age: { value: null, confidence: null },
+//           country: { name: null, alpha2: null, alpha3: null, confidence: null },
+//           document_type: { value: null, confidence: 0.995 },
+//           gender: { value: null, confidence: null },
+//           image_id: [],
+//           image_signature: [],
+//           mrz: { value: null, confidence: null },
+//           nationality: { value: null, confidence: null },
+//         },
+//       ],
+//       cost: 0.01,
+//     },
+//     "eden-ai": {
+//       status: "success",
+//       extracted_data: [
+//         {
+//           last_name: { value: "WORASIRI", confidence: 0.98 },
+//           given_names: [{ value: "Worasiri", confidence: 0.935 }],
+//           birth_place: { value: "Sum Lable", confidence: 0.067 },
+//           birth_date: { value: "1991-09-21", confidence: 0.961 },
+//           issuance_date: { value: null, confidence: 0.08 },
+//           expire_date: { value: "2030-09-20", confidence: 0.961 },
+//           document_id: { value: null, confidence: 0.41 },
+//           issuing_state: { value: null, confidence: null },
+//           address: { value: null, confidence: 0.59 },
+//           age: { value: null, confidence: null },
+//           country: { name: null, alpha2: null, alpha3: null, confidence: null },
+//           document_type: { value: null, confidence: 0.995 },
+//           gender: { value: null, confidence: null },
+//           image_id: [{ value: null, confidence: null }],
+//           image_signature: [{ value: null, confidence: null }],
+//           mrz: { value: null, confidence: 0.98 },
+//           nationality: { value: null, confidence: null },
+//         },
+//       ],
+//     },
+//   };
 
-    let firstName = '';
-    i++;
-    while(i+1<len && lowerWords[i]!=='last'){
-        firstName += words[i] + ' ';
-        i++;
-    }
+const InfomationExtract = (data) => {
 
-    return firstName.trim();
-}
-
-//last name
-const findLastName = (words,lowerWords) => {
-    const len = words.length;
-    let i = 0;
-
-    while (i < len && lowerWords[i] !== 'last') {
-        i++;
-    }
-
-    if (i === len) {
-        return null;
-    }
-
-    i+=2;
-    let lastName = i<len ? words[i] : null;
-
-    return lastName.trim();
-};
-
-//identification number
-const findIdNumber = (words,lowerWords) => {
-    const len = words.length;
-    let i = 0;
-    while(i<len && lowerWords[i] !== 'thai') {
-        i++;
-    }
-
-    if(i===len)
-    return null;
-
-    let Id = '';
-    i+=4;
-
-    while(i<len && lowerWords[i]!=='เลขประจำตัวประชาชน'){
-        Id += words[i];
-        i++;
+  const extractedData = {
+      name: null,
+      lastName: null,
+      identificationNumber: null,
+      dateOfBirth: null,
+      dateOfIssue: null,
+      dateOfExpiry: null
+    };
+    
+    // Extract information from Microsoft part
+    const microsoftData = data.microsoft.extracted_data[0];
+    if (microsoftData) {
+      extractedData.name = microsoftData.given_names.map((name) => name.value).join(' ');
+      extractedData.lastName = microsoftData.last_name.value;
     }
     
-    return Id;
-};
-
-//date of birth
-const findDOB = (words,lowerWords) => {
-    const len = words.length;
-    let i = 0;
-
-    for (; i < len; i++) {
-        if (lowerWords[i] === 'date' && lowerWords[i + 1] === 'of' && lowerWords[i + 2] === 'birth') {
-            break;
-        }
+    // Extract information from Eden AI part
+    const edenAiData = data['eden-ai'].extracted_data[0];
+    if (edenAiData) {
+      extractedData.identificationNumber = edenAiData.document_id.value;
+      extractedData.dateOfBirth = edenAiData.birth_date.value;
+      extractedData.dateOfIssue = edenAiData.issuance_date.value;
+      extractedData.dateOfExpiry = edenAiData.expire_date.value;
     }
-
-    if(i==len)
-    return null;
-
-    let DOB = '';
-
-    if(i+3<len && i+4<len && i+5<len)
-    DOB += words[i+3]+' '+words[i+4]+' '+words[i+5];
-
-    else return null;
-
-    return DOB;
-};
-
-//date of issue
-const findDOI = (words,lowerWords) => {
-    const len = words.length;
-    let i = 0;
-
-    for (; i < len; i++) {
-        if (lowerWords[i] === 'date' && lowerWords[i + 1] === 'of' && lowerWords[i + 2] === 'issue') {
-            break;
-        }
-    }
-
-    if(i==len)
-    return null;
-
-    let DOI = '';
-    
-    if(i>=1 && i>=2 && i>=3)
-    DOI += words[i-3]+' '+words[i-2]+' '+words[i-1];
-
-    else return null;
-    
-    return DOI;
-};
-
-//date of expiry
-const findDOE = (words,lowerWords) => {
-  
-    const len = words.length;
-    let i = 0;
-
-    for (; i < len; i++) {
-        if (lowerWords[i] === 'date' && lowerWords[i + 1] === 'of' && lowerWords[i + 2] === 'expiry') {
-            break;
-        }
-    }
-
-    if(i==len)
-    return null;
-
-    let DOI = '';
-
-    if(i>=1 && i>=2 && i>=3)
-    DOI += words[i-3]+' '+words[i-2]+' '+words[i-1];
-
-    else return null;
-    
-    return DOI;
-};
-
-//converting text to lowercase
-const convertToLowerCase = (text) => {
-    return text.toLowerCase();
-};
-
-// Function to extract information
-module.exports = extractInformation = (text) => {
-  const textWithoutDots = text.replace(/\./g, '');
-  const lowerText = convertToLowerCase(textWithoutDots);
-  const lowerWords = lowerText.split(/\s+/);
-  const words = textWithoutDots.split(/\s+/);
-
-  let name = '';
-  let lastName = '';
-  let idNumber = '';
-  let dateOfBirth = '';
-  let dateOfIssue = '';
-  let dateOfExpiry = '';
-
-  let nullCount = 0;
-  //first name
-  name = findFirstName(words,lowerWords);
-  lastName = findLastName(words,lowerWords);
-  idNumber = findIdNumber(words,lowerWords);
-  dateOfBirth = findDOB(words,lowerWords);
-  dateOfIssue = findDOI(words,lowerWords);
-  dateOfExpiry = findDOE(words,lowerWords);
-  
-  if(name===null) nullCount+=1;
-  if(lastName===null) nullCount+=1;
-  if(idNumber===null) nullCount+=1;
-  if(dateOfBirth===null) nullCount+=1;
-  if(dateOfExpiry===null) nullCount+=1;
-  if(dateOfIssue===null) nullCount+=1;
-
-  let success_percentage = parseInt(((6-nullCount)*100)/6);
-  return {
-    information : {
-    name,
-    lastName,
-    idNumber,
-    dateOfBirth,
-    dateOfIssue,
-    dateOfExpiry,
-    imageURL : ''
-  } , 
-  success_percentage : success_percentage
-};
+    return extractedData;
 
 }
+    module.exports = InfomationExtract;
+
+
